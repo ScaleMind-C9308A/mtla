@@ -2,6 +2,7 @@ import os, sys
 from typing import *
 import cv2
 from PIL import Image
+from tqdm import tqdm
 
 from torch.utils.data import Dataset, DataLoader
 import torchvision as tv
@@ -40,25 +41,29 @@ class CustomOxFordPet(Dataset):
         self._anns_folder = self.root + "/annotations"
         self._segs_folder = self._anns_folder + "/trimaps"
 
+        print("Data Set Setting Up")
         image_ids = []
         self._labels = []
         with open(self._anns_folder + f"/{self._split}.txt") as file:
-            for line in file:
+            for line in tqdm(file):
                 image_id, label, *_ = line.strip().split()
                 image_ids.append(image_id)
                 self._labels.append(int(label) - 1)
 
         self.classes = [
             " ".join(part.title() for part in raw_cls.split("_"))
-            for raw_cls, _ in sorted(
-                {(image_id.rsplit("_", 1)[0], label) for image_id, label in zip(image_ids, self._labels)},
-                key=lambda image_id_and_label: image_id_and_label[1],
+            for raw_cls, _ in tqdm(
+                    sorted(
+                    {(image_id.rsplit("_", 1)[0], label) for image_id, label in zip(image_ids, self._labels)},
+                    key=lambda image_id_and_label: image_id_and_label[1],
+                )
             )
         ]
         self.class_to_idx = dict(zip(self.classes, range(len(self.classes))))
 
-        self._images = [self._images_folder + f"/{image_id}.jpg" for image_id in image_ids]
-        self._segs = [self._segs_folder + f"/{image_id}.png" for image_id in image_ids]
+        self._images = [self._images_folder + f"/{image_id}.jpg" for image_id in tqdm(image_ids)]
+        self._segs = [self._segs_folder + f"/{image_id}.png" for image_id in tqdm(image_ids)]
+        print("Done")
 
     @staticmethod
     def process_mask(x):
