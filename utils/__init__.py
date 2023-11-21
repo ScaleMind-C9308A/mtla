@@ -1,1 +1,1 @@
-from .invnorm import invnorm
+from .invnorm import invnorm, invnorm255

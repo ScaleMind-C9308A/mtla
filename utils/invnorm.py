@@ -6,3 +6,8 @@ invnorm = transforms.Compose(
         transforms.Normalize(mean = [-0.5, -0.5, -0.5], std = [1., 1., 1.]),
     ]
 )
+
+def invnorm255(x):
+    x = x * 255
+
+    return x.to(x.device, dtype=torch.uint8)
