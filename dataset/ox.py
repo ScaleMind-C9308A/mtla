@@ -10,10 +10,10 @@ import torch.nn.functional as F
 from torch import Tensor
 import albumentations as A
 
-print(__file__)
+_root = "/".join(__file__.split("/")) + "/source/oxfordpet"
 
 class CustomOxFordPet(Dataset):
-    def __init__(self, root:str = "/media/mountHDD2/oxfordpet", split = 'trainval'):
+    def __init__(self, root:str = _root, split = 'trainval'):
         self.root = root
         self._split = split
         self.__mode = "train" if self._split == 'trainval' else 'test'
