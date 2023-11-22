@@ -1,1 +1,1 @@
-# MTLA - Multi Task Learning Archieve
+# MTLA - Multi-Task Learning Archive
