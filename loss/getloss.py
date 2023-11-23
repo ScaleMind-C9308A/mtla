@@ -14,6 +14,8 @@ __cate_clf = nn.CrossEntropyLoss()
 
 __recon_loss = nn.MSELoss(reduction='none')
 
+__depth_loss = nn.MSELoss()
+
 def __recon_loss_fn(recon_x, x):
     return torch.mean(torch.sum(recon_loss(recon_x, x), dim=(1,2,3)))
 
@@ -23,5 +25,6 @@ loss_dict = {
     "atr" : __binary_clf,
     "clf" : __cate_clf,
     "rec" : __recon_loss_fn,
-    "kld" : gaussian_kls
+    "kld" : gaussian_kls,
+    "dpt" : __depth_loss
 }
