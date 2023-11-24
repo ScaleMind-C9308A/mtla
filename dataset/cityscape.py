@@ -10,9 +10,11 @@ import torch.nn.functional as F
 from torch import Tensor
 from torchvision import transforms
 
+_root = "/".join(__file__.split("/")) + "/source/cityscapes"
+
 
 class CustomCityScapeDS(Dataset):
-    def __init__(self, root = None, split = "train", mode = "fine", 
+    def __init__(self, root = _root, split = "train", mode = "fine", 
                  transform = None, sematic_transform = None):
         self.split = split
         self.mode = mode
