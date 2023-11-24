@@ -10,9 +10,11 @@ import torch.nn.functional as F
 from torch import Tensor
 from torchvision import transforms
 
+_root = "/".join(__file__.split("/")) + "/source/nyuv2"
+
 
 class NYUv2(Dataset):
-    def __init__(self, root = '/media/mountHDD2/nyuv2_ulti'):
+    def __init__(self, root = _root):
         
         print("Data Set Setting Up")
         self.root = root
@@ -50,4 +52,10 @@ class NYUv2(Dataset):
         dpt_torch = torch.from_numpy(dpt).permute(-1, 0, 1)
         nor_torch = torch.from_numpy(nor).permute(-1, 0, 1)
 
-        return img_torch, msk_onehot, dpt_torch, nor_torch
+        target = {
+            "seg" : msk_onehot,
+            "depth" : dpt_torch,
+            "normal" : nor_torch
+        }
+
+        return img_torch, target
