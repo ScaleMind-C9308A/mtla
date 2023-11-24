@@ -15,7 +15,7 @@ def get_ds_ox(args):
     extra_train_ds, valid_ds, test_ds = random_split(test_ds, [0.8, 0.1, 0.1])
     valid_ds.mode = 'test'
     test_ds.mode = 'test'
-    extra_train_ds.mode = 'train' 
+    extra_train_ds.mode = 'train'
 
     train_ds = ConcatDataset([train_ds, extra_train_ds])
 
