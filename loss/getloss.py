@@ -3,7 +3,7 @@ import torch
 from torch import nn
 
 from .dice_loss import dice_loss as __dice_loss
-from .gaussian_kls import gaussian_kls as __gaussian_kls
+from .gaussian_kld import gaussian_kls as __gaussian_kls
 
 # Loss Function Definition
 __semantic_loss = nn.CrossEntropyLoss()
