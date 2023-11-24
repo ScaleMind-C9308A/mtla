@@ -53,7 +53,7 @@ class NYUv2(Dataset):
         nor_torch = torch.from_numpy(nor).permute(-1, 0, 1)
 
         target = {
-            "seg" : msk_onehot,
+            "semantic" : msk_onehot,
             "depth" : dpt_torch,
             "normal" : nor_torch
         }

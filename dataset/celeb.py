@@ -28,7 +28,7 @@ class CustomCeleb(CelebA):
         identity = target[1]
 
         target = {
-            "rec" : img,
+            "reconstruction" : img,
             "identity" : identity
         }
 
