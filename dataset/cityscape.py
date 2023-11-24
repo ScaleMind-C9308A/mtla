@@ -10,7 +10,7 @@ import torch.nn.functional as F
 from torch import Tensor
 from torchvision import transforms
 
-_root = "/".join(__file__.split("/")) + "/source/cityscapes"
+_root = "/".join(__file__.split("/")[:-1]) + "/source/cityscapes"
 
 
 class CustomCityScapeDS(Dataset):

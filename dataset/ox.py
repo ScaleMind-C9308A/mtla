@@ -10,7 +10,7 @@ import torch.nn.functional as F
 from torch import Tensor
 import albumentations as A
 
-_root = "/".join(__file__.split("/")) + "/source/oxfordpet"
+_root = "/".join(__file__.split("/")[:-1]) + "/source/oxfordpet"
 
 class CustomOxFordPet(Dataset):
     def __init__(self, root:str = _root, split = 'trainval'):

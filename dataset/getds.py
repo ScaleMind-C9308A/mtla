@@ -19,9 +19,9 @@ def get_ds_ox(args):
 
     train_ds = ConcatDataset([train_ds, extra_train_ds])
 
-    train_dl = DataLoader(train_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmen, num_workers=args.wk)
-    valid_dl = DataLoader(valid_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmen, num_workers=args.wk)
-    test_dl = DataLoader(test_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmen, num_workers=args.wk)
+    train_dl = DataLoader(train_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
+    valid_dl = DataLoader(valid_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
+    test_dl = DataLoader(test_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
 
     return (train_ds, valid_ds, test_ds, train_dl, valid_dl, test_dl)
 
@@ -30,9 +30,9 @@ def get_ds_nyu(args):
 
     train_ds, valid_ds, test_ds = random_split(ds, [0.8, 0.1, 0.1])
 
-    train_dl = DataLoader(train_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmen, num_workers=args.wk)
-    valid_dl = DataLoader(valid_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmen, num_workers=args.wk)
-    test_dl = DataLoader(test_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmen, num_workers=args.wk)
+    train_dl = DataLoader(train_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
+    valid_dl = DataLoader(valid_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
+    test_dl = DataLoader(test_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
 
     return (train_ds, valid_ds, test_ds, train_dl, valid_dl, test_dl)
 
@@ -41,9 +41,9 @@ def get_ds_celeb(args):
     valid_ds = CustomCeleb(split='valid')
     test_ds = CustomCeleb(split='test')
 
-    train_dl = DataLoader(train_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmen, num_workers=args.wk)
-    valid_dl = DataLoader(valid_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmen, num_workers=args.wk)
-    test_dl = DataLoader(test_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmen, num_workers=args.wk)
+    train_dl = DataLoader(train_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
+    valid_dl = DataLoader(valid_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
+    test_dl = DataLoader(test_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
 
     return (train_ds, valid_ds, test_ds, train_dl, valid_dl, test_dl)
 
@@ -59,9 +59,9 @@ def get_ds_city(args):
         valid_ds = CustomCityScapeDS(split='val', mode=args.citi_mode)
         test_ds = CustomCityScapeDS(split='val', mode=args.citi_mode)
     
-    train_dl = DataLoader(train_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmen, num_workers=args.wk)
-    valid_dl = DataLoader(valid_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmen, num_workers=args.wk)
-    test_dl = DataLoader(test_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmen, num_workers=args.wk)
+    train_dl = DataLoader(train_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
+    valid_dl = DataLoader(valid_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
+    test_dl = DataLoader(test_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
 
     return (train_ds, valid_ds, test_ds, train_dl, valid_dl, test_dl)
 
