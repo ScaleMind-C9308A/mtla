@@ -24,9 +24,9 @@ def miou(pred_mask, mask, smooth=1e-10, n_classes=3):
 
                 iou = (intersect + smooth) / (union + smooth)
                 iou_per_class.append(iou)
-        return np.nanmean(iou_per_class)
+        return np.nanmean(iou_per_class).item()
 
 def pixel_accuracy(pred_mask, label_mask):
-    _, _, H, W = label_mask.shape
+    B, _, H, W = label_mask.shape
 
-    return (pred_mask.argmax(dim=1) == label_mask.argmax(dim=1)).sum().item() / (H * W)
+    return (pred_mask.argmax(dim=1) == label_mask.argmax(dim=1)).sum().item() / (B * H * W)

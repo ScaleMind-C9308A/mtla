@@ -1,2 +1,3 @@
 def accuracy(logits, label):
-    return (logits.argmax(dim=1) == label).sum().item()
+    B, _ = logits.shape
+    return (logits.argmax(dim=1) == label).sum().item() / (B)
