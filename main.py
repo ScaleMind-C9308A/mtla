@@ -25,12 +25,18 @@ if __name__ == "__main__":
         help='mtl method used in training')
     parser.add_argument('--epochs', type=int, default=100,
         help='number of epochs used in training')
+    parser.add_argument('--test', action='store_true',
+        help='toggle to say that this experiment is just flow testing')
+
+    # LOGGING
     parser.add_argument('--wandb', action='store_true',
         help='toggle to use wandb for online saving')
     parser.add_argument('--log', action='store_true',
         help='toggle to use tensorboard for offline saving')
-    parser.add_argument('--test', action='store_true',
-        help='toggle to say that this experiment is just flow testing')
+    parser.add_argument('--wandb_prj', type=str, default="MTLA",
+        help='toggle to use wandb for online saving')
+    parser.add_argument('--wandb_entity', type=str, default="scalemind",
+        help='toggle to use wandb for online saving')
     
     # MODEL
     parser.add_argument('--model', type=str, default='unet', choices=['unet'],
@@ -39,6 +45,8 @@ if __name__ == "__main__":
         help='number of kernel in the first ')
     parser.add_argument('--lr', type=float, default=0.001,
         help='learning rate')
+
+    
     
 
     args = parser.parse_args()
