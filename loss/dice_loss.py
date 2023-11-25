@@ -2,6 +2,7 @@ import os, sys
 from typing import *
 import torch
 from torch import Tensor
+import torch.nn.functional as F
 
 
 def dice_coeff(input: Tensor, target: Tensor, reduce_batch_first: bool = False, epsilon: float = 1e-6):
@@ -24,7 +25,11 @@ def multiclass_dice_coeff(input: Tensor, target: Tensor, reduce_batch_first: boo
     return dice_coeff(input.flatten(0, 1), target.flatten(0, 1), reduce_batch_first, epsilon)
 
 
-def dice_loss(input: Tensor, target: Tensor, multiclass: bool = False):
+def dice_loss(input: Tensor, target: Tensor, multiclass: bool = True):
     # Dice loss (objective to minimize) between 0 and 1
+
+    _input = F.softmax(input, dim=1).float()
+    _target = target.float()
+
     fn = multiclass_dice_coeff if multiclass else dice_coeff
-    return 1 - fn(input, target, reduce_batch_first=True)
+    return 1 - fn(_input, _target, reduce_batch_first=True)
