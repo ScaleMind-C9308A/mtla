@@ -23,7 +23,10 @@ def get_ds_ox(args):
     valid_dl = DataLoader(valid_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
     test_dl = DataLoader(test_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
 
-    return (train_ds, valid_ds, test_ds, train_dl, valid_dl, test_dl)
+    args.seg_n_classes = 3
+    args.cls_n_classes = 37
+
+    return (train_ds, valid_ds, test_ds, train_dl, valid_dl, test_dl), args
 
 def get_ds_nyu(args):
     ds = NYUv2()
@@ -34,7 +37,7 @@ def get_ds_nyu(args):
     valid_dl = DataLoader(valid_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
     test_dl = DataLoader(test_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
 
-    return (train_ds, valid_ds, test_ds, train_dl, valid_dl, test_dl)
+    return (train_ds, valid_ds, test_ds, train_dl, valid_dl, test_dl), args
 
 def get_ds_celeb(args):
     train_ds = CustomCeleb(split='train')
@@ -45,7 +48,7 @@ def get_ds_celeb(args):
     valid_dl = DataLoader(valid_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
     test_dl = DataLoader(test_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
 
-    return (train_ds, valid_ds, test_ds, train_dl, valid_dl, test_dl)
+    return (train_ds, valid_ds, test_ds, train_dl, valid_dl, test_dl), args
 
 def get_ds_city(args):
     if args.citi_mode == 'fine':
@@ -63,7 +66,7 @@ def get_ds_city(args):
     valid_dl = DataLoader(valid_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
     test_dl = DataLoader(test_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
 
-    return (train_ds, valid_ds, test_ds, train_dl, valid_dl, test_dl)
+    return (train_ds, valid_ds, test_ds, train_dl, valid_dl, test_dl), args
 
 
 def get_ds(args):
@@ -75,6 +78,6 @@ def get_ds(args):
         "city" : get_ds_city
     }
 
-    train_ds, valid_ds, test_ds, train_dl, valid_dl, test_dl = ds_mapping[args.ds](args)
+    data, args = ds_mapping[args.ds](args)
 
-    return (train_ds, valid_ds, test_ds, train_dl, valid_dl, test_dl)
+    return data, args
