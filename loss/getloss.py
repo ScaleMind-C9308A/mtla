@@ -31,3 +31,13 @@ loss_dict = {
 
     # TODO: implement normal loss function and deep metric loss function
 }
+
+loss_batch = {
+    "semantic" : True,
+    "semantic_dice" : True,
+    "attr" : True,
+    "category" : True,
+    "reconstruction" : True,
+    "kld" : True,
+    "depth" : True
+}
