@@ -110,9 +110,8 @@ def train_func(args):
                 if batch == 1:
                     break 
 
-        log_interface.step()
+        log_interface.step(epoch=epoch)
 
         break
-
 
     # evaluation
