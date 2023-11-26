@@ -48,3 +48,7 @@ def save_cfg(args, exp_dir = None):
 
         with open(path, "w") as outfile: 
             json.dump(config_dict, outfile)
+
+def save_json(dct, path):
+    with open(path, "w") as outfile: 
+        json.dump(dct, outfile)

@@ -71,6 +71,8 @@ class Logging:
                     self.__log_avg[log_key] = self.__log[log_key] / self.__args.num_train_batch
                 elif 'valid' in log_key:
                     self.__log_avg[log_key] = self.__log[log_key] / self.__args.num_valid_batch
+                elif 'test' in log_key:
+                    self.__log_avg[log_key] = self.__log[log_key] / self.__args.num_test_batch
                 else:
                     raise ValueError(f'key: {log_key} wrong format')
             else:
@@ -78,6 +80,8 @@ class Logging:
                     self.__log_avg[log_key] = self.__log[log_key] / self.__args.num_train_sample
                 elif 'valid' in log_key:
                     self.__log_avg[log_key] = self.__log[log_key] / self.__args.num_valid_sample
+                elif 'test' in log_key:
+                    self.__log_avg[log_key] = self.__log[log_key] / self.__args.num_test_sample
                 else:
                     raise ValueError(f'key: {log_key} wrong format')
 
@@ -99,3 +103,22 @@ class Logging:
     @property
     def epoch(self):
         return self._Logging__epoch
+    
+    def get_avg(self, mode='test'):
+        log_avg = {}
+        
+        for log_key in self.__log:
+            if 'batch' in log_key:
+                continue
+            if self.__log[f"{log_key}_batch"]:
+                if mode in log_key:
+                    log_avg[log_key] = self.__log[log_key] / self.__args.num_test_batch
+                else:
+                    raise ValueError(f'key: {log_key} wrong format')
+            else:
+                elif mode in log_key:
+                    log_avg[log_key] = self.__log[log_key] / self.__args.num_test_sample
+                else:
+                    raise ValueError(f'key: {log_key} wrong format')
+        
+        return log_avg
