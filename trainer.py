@@ -44,6 +44,7 @@ def train_func(args):
     model = model_dict[args.model][args.ds](args).to(device)
     optimizer = Adam(model.parameters(), lr= 0.001)
     scheduler = CosineAnnealingLR(optimizer, T_max= len(train_dl)*args.epochs)
+    log_interface.watch(model)
 
     # method setup
     method = method_dict[args.method](args)

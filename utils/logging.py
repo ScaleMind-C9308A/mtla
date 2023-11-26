@@ -12,7 +12,7 @@ class Logging:
         if args.wandb:
             args.run_name = f"{args.ds}__{args.method}__{int(time.time())}"
 
-            wandb.init(
+            self.run = wandb.init(
                 project=args.wandb_prj,
                 entity=args.wandb_entity,
                 config=args,
@@ -44,7 +44,7 @@ class Logging:
         for log_key in self.__log_avg:
             if 'batch' in log_key:
                 continue
-            wandb.log({log_key: self.__log_avg[log_key]}, step=self.__epoch)
+            self.run.log({log_key: self.__log_avg[log_key]}, step=self.__epoch)
     
     def __update_board(self):
         for log_key in self.__log_avg:
@@ -88,6 +88,9 @@ class Logging:
             self.__update_board()
 
         self.__reset_epoch()
+    
+    def watch(self, model):
+        self.run.watch(models=model, log='all', log_freq=args.num_train_batch, log_graph=True)
     
     @property
     def log(self):
