@@ -66,7 +66,7 @@ def train_func(args):
                         task_loss = loss_dict[loss_name](pred_target[task], target[task])
                         losses.append(task_loss)
 
-                        log_key = f"train/{task}_loss"
+                        log_key = f"train/{loss_name}_loss"
                         log_interface(key=log_key, value=task_loss.item(), mode='train', batch=loss_batch[loss_name])
 
                 for metric in metric_dict:
@@ -94,7 +94,7 @@ def train_func(args):
                         if task in loss_name:
                             task_loss = loss_dict[loss_name](pred_target[task], target[task])
 
-                            log_key = f"valid/{task}_loss"
+                            log_key = f"valid/{loss_name}_loss"
                             log_interface(key=log_key, value=task_loss.item(), mode='valid', batch=loss_batch[loss_name])
 
                     for metric in metric_dict:    
