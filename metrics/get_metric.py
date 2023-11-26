@@ -14,4 +14,12 @@ metric_dict = {
     "attr_accuracy" : __accuracy
 }
 
+metric_batch = {
+    "depth" : True,
+    "semantic_miou" : True,
+    "semantic_pixel_accuracy" : False,
+    "category_accuracy" : False,
+    "attr_accuracy" : False
+}
+
 # TODO: implement normal metrics
