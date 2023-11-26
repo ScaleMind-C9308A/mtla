@@ -12,7 +12,7 @@ from loss import loss_dict, loss_batch
 from model import model_dict
 from method import method_dict
 
-from utils import folder_setup, save_cfg, Logging
+from utils import folder_setup, save_cfg, Logging, save_json
 
 
 def train_func(args):
@@ -29,13 +29,14 @@ def train_func(args):
     data, args = get_ds(args)
     train_ds, valid_ds, test_ds, train_dl, valid_dl, test_dl = data
 
-    print(f"Number Training Samples: {len(train_ds)}")
-    print(f"Number Validating Samples: {len(valid_ds)}")
-    print(f"Number Testing Samples: {len(test_ds)}")
+    if args.verbose:
+        print(f"Number Training Samples: {len(train_ds)}")
+        print(f"Number Validating Samples: {len(valid_ds)}")
+        print(f"Number Testing Samples: {len(test_ds)}")
 
-    print(f"Number Training Batchs: {len(train_dl)}")
-    print(f"Number Validating Batchs: {len(valid_dl)}")
-    print(f"Number Testing Batchs: {len(test_dl)}")
+        print(f"Number Training Batchs: {len(train_dl)}")
+        print(f"Number Validating Batchs: {len(valid_dl)}")
+        print(f"Number Testing Batchs: {len(test_dl)}")
 
     # logging setup
     log_interface = Logging(args)
@@ -50,11 +51,13 @@ def train_func(args):
     method = method_dict[args.method](args)
 
     # training
-    for epoch in range(args.epochs):
-
+    epoch_prog = range(args.epochs) if args.verbose else tqdm(range(args.epochs))
+    for epoch in epoch_prog:
+        if args.verbose:
+            print(f"Epoch: {epoch}")
         model.train()
-
-        for batch, (img, target) in tqdm(enumerate(train_dl)):
+        train_prog = tqdm(enumerate(train_dl)) if args.verbose else enumerate(train_dl)
+        for batch, (img, target) in train_prog:
             img = img.to(device)
             for task in target:
                 target[task] = target[task].to(device)
@@ -81,9 +84,10 @@ def train_func(args):
             method.backward(model=model, losses=losses)
             optimizer.step()
         
+        valid_prog = tqdm(enumerate(valid_dl)) if args.verbose else enumerate(valid_dl)
         model.eval()
         with torch.no_grad():
-            for batch, (img, target) in tqdm(enumerate(valid_dl)):
+            for batch, (img, target) in valid_prog:
                 img = img.to(device)
                 for task in target:
                     target[task] = target[task].to(device)
@@ -108,3 +112,35 @@ def train_func(args):
         log_interface.step(epoch=epoch)
 
     # evaluation
+    log_interface.reset()
+    test_prog = tqdm(enumerate(test_dl)) if args.verbose else enumerate(test_dl)
+    model.eval()
+    with torch.no_grad():
+        for batch, (img, target) in test_prog:
+            img = img.to(device)
+            for task in target:
+                target[task] = target[task].to(device)
+            
+            pred_target = model(img)
+
+            for task in pred_target:
+                for loss_name in loss_dict:
+                    if task in loss_name:
+                        task_loss = loss_dict[loss_name](pred_target[task], target[task])
+
+                        log_key = f"test/{loss_name}_loss"
+                        log_interface(key=log_key, value=task_loss.item(), mode='test', batch=loss_batch[loss_name])
+
+                for metric in metric_dict:    
+                    if task in metric:
+                        value = metric_dict[metric](pred_target[task], target[task])
+
+                        log_key = f"test/{metric}"
+                        log_interface(key=log_key, value=value, mode='test', batch=metric_batch[metric])
+    
+    test_log_avg = log_interface.get_avg(mode='test')
+    test_log_avg_path = args.exp_dir + "/test_log_avg.json"
+    save_json(test_log_avg, test_log_avg_path)
+
+    # finalization
+    
