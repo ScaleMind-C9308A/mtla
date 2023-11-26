@@ -31,7 +31,7 @@ class Logging:
 
     
     def __call__(self, key, value, mode='train', batch=None):
-        if not batch:
+        if batch is None:
             raise ValueError('batch cannot be None')
         
         if key in self.__log:
