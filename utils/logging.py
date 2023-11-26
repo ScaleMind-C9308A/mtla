@@ -94,7 +94,7 @@ class Logging:
         self.__reset_epoch()
     
     def watch(self, model):
-        self.run.watch(models=model, log='all', log_freq=args.num_train_batch, log_graph=True)
+        self.run.watch(models=model, log='all', log_freq=self.__args.num_train_batch, log_graph=True)
     
     @property
     def log(self):
@@ -116,7 +116,7 @@ class Logging:
                 else:
                     raise ValueError(f'key: {log_key} wrong format')
             else:
-                elif mode in log_key:
+                if mode in log_key:
                     log_avg[log_key] = self.__log[log_key] / self.__args.num_test_sample
                 else:
                     raise ValueError(f'key: {log_key} wrong format')

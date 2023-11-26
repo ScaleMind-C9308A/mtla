@@ -1,5 +1,6 @@
 import os, sys
 from tqdm import tqdm
+import cv2
 
 import torch
 from torch import nn
@@ -12,7 +13,7 @@ from loss import loss_dict, loss_batch
 from model import model_dict
 from method import method_dict
 
-from utils import folder_setup, save_cfg, Logging, save_json
+from utils import folder_setup, save_cfg, Logging, save_json, invnorm, invnorm255
 
 
 def train_func(args):
@@ -51,7 +52,11 @@ def train_func(args):
     method = method_dict[args.method](args)
 
     # training
+    if args.verbose:
+        print("Training")
+    old_valid_loss = 1e26
     epoch_prog = range(args.epochs) if args.verbose else tqdm(range(args.epochs))
+    
     for epoch in epoch_prog:
         if args.verbose:
             print(f"Epoch: {epoch}")
@@ -87,17 +92,18 @@ def train_func(args):
         valid_prog = tqdm(enumerate(valid_dl)) if args.verbose else enumerate(valid_dl)
         model.eval()
         with torch.no_grad():
+            losses = []
             for batch, (img, target) in valid_prog:
                 img = img.to(device)
                 for task in target:
                     target[task] = target[task].to(device)
                 
                 pred_target = model(img)
-
                 for task in pred_target:
                     for loss_name in loss_dict:
                         if task in loss_name:
                             task_loss = loss_dict[loss_name](pred_target[task], target[task])
+                            losses.append(task_loss.item())
 
                             log_key = f"valid/{loss_name}_loss"
                             log_interface(key=log_key, value=task_loss.item(), mode='valid', batch=loss_batch[loss_name])
@@ -110,9 +116,27 @@ def train_func(args):
                             log_interface(key=log_key, value=value, mode='valid', batch=metric_batch[metric])
 
         log_interface.step(epoch=epoch)
+        
+        valid_loss = sum(losses) / args.num_valid_batch
+        save_dict = {
+            'epoch': epoch,
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+            'loss': valid_loss
+        }
+        if valid_loss < old_valid_loss:
+            old_valid_loss = valid_loss
+            
+            save_path = args.exp_dir + f"/best.pt"
+            torch.save(save_dict, save_path)
+        
+        save_path = args.exp_dir + f"/last.pt"
+        torch.save(save_dict, save_path)
 
     # evaluation
     log_interface.reset()
+    if args.verbose:
+        print("Validating")
     test_prog = tqdm(enumerate(test_dl)) if args.verbose else enumerate(test_dl)
     model.eval()
     with torch.no_grad():
@@ -143,4 +167,37 @@ def train_func(args):
     save_json(test_log_avg, test_log_avg_path)
 
     # finalization
+    for idx, (img, target) in enumerate(test_ds[:10]):
+        img = img.unsqueeze(0).to(device)
+        
+        pred = model(img)
+        
+        for task in target:
+            if task == "semantic":
+                perform_dir = args.exp_dir + f"/{task}"
+                if not os.path.exists(perform_dir):
+                    os.mkdir(perform_dir)
+                pred_task_np = torch.argmax(pred[task][0], dim=0).cpu().unsqueeze(0).permute(1, -1, 0).numpy()
+                lble_task_np = torch.argmax(target[task], dim=0).cpu().unsqueeze(0).permute(1, -1, 0).numpy()
+
+                pred_path = perform_dir + f"/pred_{idx}.png"
+                lble_path = perform_dir + f"/lble_{idx}.png"
+                
+                cv2.imwrite(pred_path, pred_task_np)
+                cv2.imwrite(lble_path, lble_task_np)
+            elif task in ['depth', 'reconstruction', 'normal']:
+                perform_dir = args.exp_dir + f"/{task}"
+                pass
+            
+                # TODO: implement save performance for depth
+
+        img_dir = args.exp_dir + f"/img"
+        
+        if args.ds == 'oxford':
+            img = invnorm(img[0]).cpu().permute(1, -1, 0).numpy()
+            
+        path = img_dir + f"/{idx}"
+        cv2.imwrite(path, img)
     
+    if args.verbose:
+        print("Ending")

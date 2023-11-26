@@ -37,7 +37,7 @@ if __name__ == "__main__":
         help='toggle to use wandb for online saving')
     parser.add_argument('--wandb_entity', type=str, default="scalemind",
         help='toggle to use wandb for online saving')
-     parser.add_argument('--verbose', action='store_true',
+    parser.add_argument('--verbose', action='store_true',
         help='toggle to use print information during training')
     
     # MODEL
@@ -47,9 +47,6 @@ if __name__ == "__main__":
         help='number of kernel in the first ')
     parser.add_argument('--lr', type=float, default=0.001,
         help='learning rate')
-
-    
-    
 
     args = parser.parse_args()
 
