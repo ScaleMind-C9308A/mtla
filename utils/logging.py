@@ -42,10 +42,14 @@ class Logging:
     
     def __update_wandb(self):
         for log_key in self.__log_avg:
+            if 'batch' in log_key:
+                continue
             wandb.log({log_key: self.__log_avg[log_key]}, step=self.__epoch)
     
     def __update_board(self):
         for log_key in self.__log_avg:
+            if 'batch' in log_key:
+                continue
             self.writer.add_scalar(log_key, self.__log_avg[log_key], self.__epoch)
     
     def __reset_epoch(self):
@@ -60,7 +64,7 @@ class Logging:
         
         self.__log_avg = {}
         for log_key in self.__log:
-            if batch in log_key:
+            if 'batch' in log_key:
                 continue
             if self.__log[f"{log_key}_batch"]:
                 if 'train' in log_key:
