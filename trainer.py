@@ -79,9 +79,6 @@ def train_func(args):
             optimizer.zero_grad()
             method.backward(model=model, losses=losses)
             optimizer.step()
-            
-            if batch == 3:
-                break
         
         model.eval()
         with torch.no_grad():
@@ -107,11 +104,6 @@ def train_func(args):
                             log_key = f"valid/{metric}"
                             log_interface(key=log_key, value=value, mode='valid', batch=metric_batch[metric])
 
-                if batch == 1:
-                    break 
-
         log_interface.step(epoch=epoch)
-
-        break
 
     # evaluation
