@@ -1,10 +1,12 @@
 import os, sys
+sys.path.append("/".join(__file__.split("/")[:-2]))
 
 from .core import *
+from abs import Core
 
-class OxFordPetUnet(nn.Module):
+class OxFordPetUnet(Core):
     def __init__(self, args):
-        super(OxFordPetUnet, self).__init__()
+        super(OxFordPetUnet, self).__init__(args)
         self.seg_n_classes = args.seg_n_classes
         self.cls_n_classes = args.cls_n_classes
         self.init_ch = args.init_ch
