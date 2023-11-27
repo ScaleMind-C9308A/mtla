@@ -7,6 +7,7 @@ class Core(nn.Module):
     def __init__(self, args):
         super().__init__()
         self.args = args
+        self.task_num = args.task_num
 
         self.encoder = None
         self.decoder = None
