@@ -90,6 +90,8 @@ def train_func(args):
             optimizer.zero_grad()
             method.backward(model=model, losses=losses)
             optimizer.step()
+
+            scheduler.step()
         
         valid_prog = tqdm(enumerate(valid_dl)) if args.verbose else enumerate(valid_dl)
         model.eval()
