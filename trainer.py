@@ -1,6 +1,8 @@
 import os, sys
 from tqdm import tqdm
 import cv2
+import numpy as np
+import matplotlib.pyplot as plt
 
 import torch
 from torch import nn
@@ -167,7 +169,8 @@ def train_func(args):
     save_json(test_log_avg, test_log_avg_path)
 
     # finalization
-    for idx, (img, target) in enumerate(test_ds[:10]):
+    for idx in range(10):
+        img, target = test_ds[idx]
         img = img.unsqueeze(0).to(device)
         
         pred = model(img)
@@ -180,11 +183,18 @@ def train_func(args):
                 pred_task_np = torch.argmax(pred[task][0], dim=0).cpu().unsqueeze(0).permute(1, -1, 0).numpy()
                 lble_task_np = torch.argmax(target[task], dim=0).cpu().unsqueeze(0).permute(1, -1, 0).numpy()
 
-                pred_path = perform_dir + f"/pred_{idx}.png"
-                lble_path = perform_dir + f"/lble_{idx}.png"
-                
-                cv2.imwrite(pred_path, pred_task_np)
-                cv2.imwrite(lble_path, lble_task_np)
+                pred_path = perform_dir + f"/pred_{idx}.pdf"
+                lble_path = perform_dir + f"/lble_{idx}.pdf"                
+
+                for _img, _path in zip([pred_task_np, lble_task_np], [pred_path, lble_path]):
+                    plt.figure()
+
+                    plt.imshow(_img)
+                    plt.axis('off')
+                    plt.savefig(_path, format='pdf', dpi=300)
+
+                    plt.close()
+
             elif task in ['depth', 'reconstruction', 'normal']:
                 perform_dir = args.exp_dir + f"/{task}"
                 pass
@@ -192,12 +202,20 @@ def train_func(args):
                 # TODO: implement save performance for depth
 
         img_dir = args.exp_dir + f"/img"
+        if not os.path.exists(img_dir):
+            os.mkdir(img_dir)
         
         if args.ds == 'oxford':
-            img = invnorm(img[0]).cpu().permute(1, -1, 0).numpy()
+            img_np = invnorm(img[0]).cpu().permute(1, -1, 0).numpy()
             
-        path = img_dir + f"/{idx}"
-        cv2.imwrite(path, img)
+        path = img_dir + f"/{idx}.pdf"
+        plt.figure()
+
+        plt.imshow(img_np)
+        plt.axis('off')
+        plt.savefig(path, format='pdf', dpi=300, pad_inches=0)
+
+        plt.close()
     
     if args.verbose:
         print("Ending")
