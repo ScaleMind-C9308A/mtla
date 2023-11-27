@@ -44,14 +44,16 @@ def train_func(args):
     # logging setup
     log_interface = Logging(args)
 
-    # model setup
-    model = model_dict[args.model][args.ds](args).to(device)
+    # pre setup
+    class Model(model_dict[args.model][args.ds], method_dict[args.method]):
+        def __init__(self, args):
+            super().__init__(args)
+    
+    model = Model(args).to(device)
     optimizer = Adam(model.parameters(), lr= 0.001)
     scheduler = CosineAnnealingLR(optimizer, T_max= len(train_dl)*args.epochs)
-    log_interface.watch(model)
-
-    # method setup
-    method = method_dict[args.method](args)
+    if args.wandb:
+        log_interface.watch(model)
 
     # training
     if args.verbose:
@@ -88,7 +90,7 @@ def train_func(args):
                         log_interface(key=log_key, value=value, mode='train', batch=metric_batch[metric])
             
             optimizer.zero_grad()
-            method.backward(model=model, losses=losses)
+            model.backward(losses=losses, args=args)
             optimizer.step()
 
             scheduler.step()
