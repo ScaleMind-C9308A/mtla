@@ -25,6 +25,7 @@ def get_ds_ox(args):
 
     args.seg_n_classes = 3
     args.cls_n_classes = 37
+    args.task_num = len(list(train_ds[0][1].keys()))
 
     args.num_train_sample = len(train_ds)
     args.num_valid_sample = len(valid_ds)
@@ -44,6 +45,8 @@ def get_ds_nyu(args):
     valid_dl = DataLoader(valid_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
     test_dl = DataLoader(test_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
 
+    args.task_num = len(list(train_ds[0][1].keys()))
+
     args.num_train_sample = len(train_ds)
     args.num_valid_sample = len(valid_ds)
     args.num_test_sample = len(test_ds)
@@ -61,6 +64,8 @@ def get_ds_celeb(args):
     train_dl = DataLoader(train_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
     valid_dl = DataLoader(valid_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
     test_dl = DataLoader(test_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
+
+    args.task_num = len(list(train_ds[0][1].keys()))
 
     args.num_train_sample = len(train_ds)
     args.num_valid_sample = len(valid_ds)
@@ -86,6 +91,8 @@ def get_ds_city(args):
     train_dl = DataLoader(train_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
     valid_dl = DataLoader(valid_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
     test_dl = DataLoader(test_ds, batch_size=args.bs, shuffle=True, pin_memory=args.pinmem, num_workers=args.wk)
+
+    args.task_num = len(list(train_ds[0][1].keys()))
 
     args.num_train_sample = len(train_ds)
     args.num_valid_sample = len(valid_ds)
