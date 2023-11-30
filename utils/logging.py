@@ -3,16 +3,19 @@ import time
 
 import wandb
 from torch.utils.tensorboard import SummaryWriter
+import pickle
 
 class Logging:
     def __init__(self, args):
         self.__log = {}
         self.__epoch = 0
+        self.__grad_sol = {}
+        self.__step = 0
 
         if args.wandb:
             args.run_name = f"{args.ds}__{args.method}__{int(time.time())}"
 
-            self.run = wandb.init(
+            self.__run = wandb.init(
                 project=args.wandb_prj,
                 entity=args.wandb_entity,
                 config=args,
@@ -21,11 +24,15 @@ class Logging:
             )
 
         if args.log:
-            self.writer = SummaryWriter(args.exp_dir)
-            self.writer.add_text(
+            self.__writer = SummaryWriter(args.exp_dir)
+            self.__writer.add_text(
                 "hyperparameters",
                 "|param|value|\n|-|-|\n%s" % ("\n".join([f"|{key}|{value}|" for key, value in vars(args).items()])),
             )
+            
+            self.__grad_sol_dir = args.exp_dir + "/grad_sol"
+            if not os.path.exists(self.__grad_sol_dir):
+                os.mkdir(self.__grad_sol_dir)
         
         self.__args = args
 
@@ -44,13 +51,13 @@ class Logging:
         for log_key in self.__log_avg:
             if 'batch' in log_key:
                 continue
-            self.run.log({log_key: self.__log_avg[log_key]}, step=self.__epoch)
+            self.__run.log({log_key: self.__log_avg[log_key]}, step=self.__epoch)
     
     def __update_board(self):
         for log_key in self.__log_avg:
             if 'batch' in log_key:
                 continue
-            self.writer.add_scalar(log_key, self.__log_avg[log_key], self.__epoch)
+            self.__writer.add_scalar(log_key, self.__log_avg[log_key], self.__epoch)
     
     def __reset_epoch(self):
         self.__log = {}
@@ -58,6 +65,8 @@ class Logging:
     def reset(self):
         self.__reset_epoch()
         self.__epoch = 0
+        self.__grad_sol = {}
+        self.__step = 0
     
     def step(self, epoch):
         self.__epoch = epoch
@@ -94,7 +103,17 @@ class Logging:
         self.__reset_epoch()
     
     def watch(self, model):
-        self.run.watch(models=model, log='all', log_freq=self.__args.num_train_batch, log_graph=True)
+        self.__run.watch(models=model, log='all', log_freq=self.__args.num_train_batch, log_graph=True)
+    
+    def add_grad(self, grad):
+        self.__grad_sol[self.__step] = grad
+        self.__step += 1
+    
+    def save_grad(self):
+        dbfile = open(self.__grad_sol_dir + "/grad", 'wb')
+
+        pickle.dump(self.__grad_sol, dbfile)                    
+        dbfile.close()
     
     @property
     def log(self):
