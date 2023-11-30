@@ -48,9 +48,11 @@ def train_func(args):
     class Model(model_dict[args.model][args.ds], method_dict[args.method]):
         def __init__(self, args):
             super().__init__(args)
+
+            self.device = device
     
     model = Model(args).to(device)
-    optimizer = Adam(model.parameters(), lr= 0.001)
+    optimizer = Adam(model.parameters(), lr = 0.001)
     scheduler = CosineAnnealingLR(optimizer, T_max= len(train_dl)*args.epochs)
     if args.wandb:
         log_interface.watch(model)
@@ -90,10 +92,15 @@ def train_func(args):
                         log_interface(key=log_key, value=value, mode='train', batch=metric_batch[metric])
             
             optimizer.zero_grad()
-            model.backward(losses=losses, args=args)
+            sol_grad = model.backward(losses=losses, args=args)
+            if sol_grad is not None and args.log:
+                log_interface.add_grad(sol_grad)
+
             optimizer.step()
 
             scheduler.step()
+
+
         
         valid_prog = tqdm(enumerate(valid_dl)) if args.verbose else enumerate(valid_dl)
         model.eval()
@@ -138,6 +145,9 @@ def train_func(args):
         
         save_path = args.exp_dir + f"/last.pt"
         torch.save(save_dict, save_path)
+    
+    # save gradient solution
+    log_interface.save_grad()
 
     # evaluation
     log_interface.reset()
