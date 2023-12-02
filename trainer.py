@@ -74,12 +74,14 @@ def train_func(args):
                 target[task] = target[task].to(device)
 
             pred_target = model(img)
-            losses = []
-            for task in pred_target:
+            # losses = []
+            losses = torch.zeros(args.task_num).to(device)
+            for tsk_idx, task in enumerate(pred_target):
                 for loss_name in loss_dict:
                     if task in loss_name:
                         task_loss = loss_dict[loss_name](pred_target[task], target[task])
-                        losses.append(task_loss)
+                        # losses.append(task_loss)
+                        losses[tsk_idx] = task_loss
 
                         log_key = f"train/{loss_name}_loss"
                         log_interface(key=log_key, value=task_loss.item(), mode='train', batch=loss_batch[loss_name])
