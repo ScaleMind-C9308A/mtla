@@ -13,6 +13,6 @@ class EW(Vanilla):
     def backward(self, losses: list = None, args = None):
         if args is None:
             raise ValueError('args cannot be None')
-        total_loss = sum(losses) / len(losses)
+        total_loss = torch.sum(losses) / args.task_num
 
         total_loss.backward()

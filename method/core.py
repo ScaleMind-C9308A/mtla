@@ -12,7 +12,7 @@ class Vanilla(nn.Module):
     def backward(self, losses: list = None, args = None):
         if args is None:
             raise ValueError('args cannot be None')
-        total_loss = sum(losses)
+        total_loss = torch.sum(losses)
 
         total_loss.backward()
     
