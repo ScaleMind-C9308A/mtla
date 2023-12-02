@@ -54,6 +54,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    from trainer import train_funcs
+    from trainer import train_func
 
     train_func(args)
