@@ -25,7 +25,8 @@ def get_ds_ox(args):
 
     args.seg_n_classes = 3
     args.cls_n_classes = 37
-    args.task_num = 3
+    # args.task_num = 3
+    args.task_num = 2
 
     args.num_train_sample = len(train_ds)
     args.num_valid_sample = len(valid_ds)
