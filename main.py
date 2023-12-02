@@ -21,7 +21,7 @@ if __name__ == "__main__":
     # TRAINING GENERAL SETTINGS
     parser.add_argument('--idx', type=int, default=0,
         help='device index used in training')
-    parser.add_argument('--method', type=str, default='vanilla', choices=['vanilla', 'mgda'],
+    parser.add_argument('--method', type=str, default='vanilla', choices=['vanilla', 'mgda', 'ew'],
         help='mtl method used in training')
     parser.add_argument('--epochs', type=int, default=100,
         help='number of epochs used in training')
