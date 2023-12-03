@@ -149,7 +149,8 @@ def train_func(args):
         torch.save(save_dict, save_path)
     
     # save gradient solution
-    log_interface.save_grad()
+    if args.log:
+        log_interface.save_grad()
 
     # evaluation
     log_interface.reset()
