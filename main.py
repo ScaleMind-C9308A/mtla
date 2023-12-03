@@ -41,7 +41,7 @@ if __name__ == "__main__":
         help='toggle to use print information during training')
     
     # MODEL
-    parser.add_argument('--model', type=str, default='unet', choices=['unet'],
+    parser.add_argument('--model', type=str, default='unet', choices=['unet', 'segnet'],
         help='based architecture used in training')
     parser.add_argument('--init_ch', type=int, default=32,
         help='number of kernel in the first ')
