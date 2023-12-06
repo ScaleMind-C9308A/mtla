@@ -9,6 +9,9 @@ class Vanilla(nn.Module):
     def __init__(self):
         super(Vanilla, self).__init__()
     
+    def init_param(self):
+        pass 
+    
     def backward(self, losses: list = None, args = None):
         if args is None:
             raise ValueError('args cannot be None')

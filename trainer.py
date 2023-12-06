@@ -52,6 +52,7 @@ def train_func(args):
             self.device = device
     
     model = Model(args).to(device)
+    model.init_param()
     optimizer = Adam(model.parameters(), lr = 0.001)
     scheduler = CosineAnnealingLR(optimizer, T_max= len(train_dl)*args.epochs)
     if args.wandb:
