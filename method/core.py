@@ -10,7 +10,7 @@ class Vanilla(nn.Module):
         super(Vanilla, self).__init__()
     
     def init_param(self):
-        pass 
+        self.train_loss_buffer = np.zeros([self.args.task_num, self.args.epochs])
     
     def backward(self, losses: list = None, args = None):
         if args is None:
