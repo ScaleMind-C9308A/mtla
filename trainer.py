@@ -65,6 +65,7 @@ def train_func(args):
     epoch_prog = range(args.epochs) if args.verbose else tqdm(range(args.epochs))
     
     for epoch in epoch_prog:
+        args.epoch = epoch
         if args.verbose:
             print(f"Epoch: {epoch}")
         model.train()
@@ -75,13 +76,11 @@ def train_func(args):
                 target[task] = target[task].to(device)
 
             pred_target = model(img)
-            # losses = []
             losses = torch.zeros(args.task_num).to(device)
             for tsk_idx, task in enumerate(pred_target):
                 for loss_name in loss_dict:
                     if task in loss_name:
                         task_loss = loss_dict[loss_name](pred_target[task], target[task])
-                        # losses.append(task_loss)
                         losses[tsk_idx] = task_loss
 
                         log_key = f"train/{loss_name}_loss"
@@ -102,8 +101,6 @@ def train_func(args):
             optimizer.step()
 
             scheduler.step()
-
-
         
         valid_prog = tqdm(enumerate(valid_dl)) if args.verbose else enumerate(valid_dl)
         model.eval()
@@ -131,6 +128,14 @@ def train_func(args):
                             log_key = f"valid/{metric}"
                             log_interface(key=log_key, value=value, mode='valid', batch=metric_batch[metric])
 
+        temp_log = log_interface.log
+        temp_loss = []
+        for loss_name in loss_dict:
+            target_key = f"train/{loss_name}_loss"
+            if target_key in temp_log:
+                temp_loss.append(temp_log[target_key])
+        model.train_loss_buffer[:, epoch] = np.array(temp_loss)
+        
         log_interface.step(epoch=epoch)
         
         valid_loss = sum(losses) / args.num_valid_batch
