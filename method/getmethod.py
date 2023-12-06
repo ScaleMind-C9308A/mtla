@@ -4,6 +4,7 @@ from .ew import EW
 from .rlw import RLW
 from .pcgrad import PCGrad
 from .uw import UW
+from .dwa import DWA
 
 method_dict = {
     "vanilla" : Vanilla,
@@ -11,5 +12,6 @@ method_dict = {
     'ew' : EW,
     'rlw' : RLW,
     'pcgrad' : PCGrad,
-    'uw' : UW
+    'uw' : UW,
+    'dwa' : DWA
 }
