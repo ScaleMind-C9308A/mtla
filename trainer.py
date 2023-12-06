@@ -128,15 +128,14 @@ def train_func(args):
                             log_key = f"valid/{metric}"
                             log_interface(key=log_key, value=value, mode='valid', batch=metric_batch[metric])
 
-        temp_log = log_interface.log
+        log_interface.step(epoch=epoch)
+        temp_log = log_interface.log_avg
         temp_loss = []
         for loss_name in loss_dict:
             target_key = f"train/{loss_name}_loss"
             if target_key in temp_log:
                 temp_loss.append(temp_log[target_key])
         model.train_loss_buffer[:, epoch] = np.array(temp_loss)
-        
-        log_interface.step(epoch=epoch)
         
         valid_loss = sum(losses) / args.num_valid_batch
         save_dict = {
