@@ -11,6 +11,7 @@ class UW(Vanilla):
         super(UW, self).__init__()
     
     def init_param(self):
+        super().init_param()
         self.loss_scale = nn.Parameter(torch.tensor([-0.5]*self.task_num, device=self.device))
     
     def backward(self, losses, args):
