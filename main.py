@@ -21,7 +21,7 @@ if __name__ == "__main__":
     # TRAINING GENERAL SETTINGS
     parser.add_argument('--idx', type=int, default=0,
         help='device index used in training')
-    parser.add_argument('--method', type=str, default='vanilla', choices=['vanilla', 'mgda', 'ew', 'rlw', 'pcgrad', 'uw'],
+    parser.add_argument('--method', type=str, default='vanilla', choices=['vanilla', 'mgda', 'ew', 'rlw', 'pcgrad', 'uw', 'dwa'],
         help='mtl method used in training')
     parser.add_argument('--epochs', type=int, default=100,
         help='number of epochs used in training')
@@ -51,6 +51,10 @@ if __name__ == "__main__":
     # MGDA
     parser.add_argument('--mgda_gn', type=str, default='none', choices=['l2', 'loss', 'loss+', 'none'],
         help='gradient norm type used in mgda')
+    
+    #DWA
+    parser.add_argument('--T', type=float, default=2.0, 
+        help='T for DWA')
 
     args = parser.parse_args()
 
