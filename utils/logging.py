@@ -120,6 +120,10 @@ class Logging:
         return self._Logging__log
     
     @property
+    def log_avg(self):
+        return self._Logging__log_avg
+    
+    @property
     def epoch(self):
         return self._Logging__epoch
     
