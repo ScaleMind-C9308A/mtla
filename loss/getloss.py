@@ -21,7 +21,7 @@ def __recon_loss_fn(recon_x, x):
 
 loss_dict = {
     "semantic" : __semantic_loss,
-    # "semantic_dice" : __dice_loss,
+    "semantic_dice" : __dice_loss,
     "attr" : __binary_clf,
     "category" : __cate_clf,
     "reconstruction" : __recon_loss_fn,
