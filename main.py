@@ -21,7 +21,8 @@ if __name__ == "__main__":
     # TRAINING GENERAL SETTINGS
     parser.add_argument('--idx', type=int, default=0,
         help='device index used in training')
-    parser.add_argument('--method', type=str, default='vanilla', choices=['vanilla', 'mgda', 'ew', 'rlw', 'pcgrad', 'uw', 'dwa', 'gn'],
+    parser.add_argument('--method', type=str, default='vanilla', 
+        choices=['vanilla', 'mgda', 'ew', 'rlw', 'pcgrad', 'uw', 'dwa', 'gn', 'cagrad'],
         help='mtl method used in training')
     parser.add_argument('--epochs', type=int, default=100,
         help='number of epochs used in training')
@@ -58,6 +59,10 @@ if __name__ == "__main__":
     
     # GradNorm
     parser.add_argument('--alpha', type=float, default=1.5, help='alpha for GradNorm')
+
+    # CaGrad
+    parser.add_argument('--calpha', type=float, default=0.5, help='calpha for CAGrad')
+    parser.add_argument('--rescale', type=int, default=1, help='rescale for CAGrad')
 
     args = parser.parse_args()
 
