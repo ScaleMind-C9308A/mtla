@@ -8,7 +8,7 @@ from scipy.optimize import minimize
 from .core import Vanilla
 
 
-class CAGrad(AbsWeighting):
+class CAGrad(Vanilla):
     def __init__(self):
         super(CAGrad, self).__init__()
         

@@ -6,7 +6,7 @@ from .pcgrad import PCGrad
 from .uw import UW
 from .dwa import DWA
 from .gradnorm import GradNorm
-from .cagrad import 
+from .cagrad import CAGrad
 
 method_dict = {
     "vanilla" : Vanilla,
