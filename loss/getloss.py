@@ -17,7 +17,7 @@ __recon_loss = nn.MSELoss(reduction='none')
 __depth_loss = nn.MSELoss()
 
 def __recon_loss_fn(recon_x, x):
-    return torch.mean(torch.sum(recon_loss(recon_x, x), dim=(1,2,3)))
+    return torch.mean(torch.sum(__recon_loss(recon_x, x), dim=(1,2,3)))
 
 loss_dict = {
     "semantic" : __semantic_loss,
