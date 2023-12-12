@@ -1,4 +1,5 @@
 from torchvision import transforms
+import torch
 
 invnorm = transforms.Compose(
     [
