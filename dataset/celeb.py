@@ -15,7 +15,7 @@ transform = transforms.Compose(
 
 class CustomCeleb(CelebA):
     def __init__(self, root="~/data", split='train', download=True, transform=transform):
-        super().__init__(root=root_dir, split=split, download=download, transform=transform, target_type = ['attr', 'identity'])
+        super().__init__(root=root, split=split, download=download, transform=transform, target_type = ['attr', 'identity'])
         self.attr_names = self.attr_names[:-1]
 
     def __len__(self):

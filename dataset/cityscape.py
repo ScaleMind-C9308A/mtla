@@ -3,7 +3,10 @@ from typing import *
 import cv2
 from PIL import Image
 from tqdm import tqdm
+import argparse
+import numpy as np
 
+import torch
 from torch.utils.data import Dataset, DataLoader
 import torchvision as tv
 import torch.nn.functional as F
@@ -80,7 +83,7 @@ class CustomCityScapeDS(Dataset):
             if self.split not in ['train', 'train_extra', 'val']:
                 raise ValueError("self.split has to be one of ['train', 'train_extra', 'val']")
         else:
-            raise Value_colorError(f"mode cannot be {self.mode}")
+            raise ValueError(f"mode cannot be {self.mode}")
 
         self.img_dir = self.root + f"/leftImg8bit/{self.split}"
         self.mode_folder = "gtFine" if self.mode == "fine" else "gtCoarse"
