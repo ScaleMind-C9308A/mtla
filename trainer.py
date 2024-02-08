@@ -1,8 +1,7 @@
 import os, sys
-from tqdm import tqdm
-import cv2
+from rich.progress import track
 import numpy as np
-import matplotlib.pyplot as plt
+import random
 
 import torch
 from torch import nn
@@ -20,6 +19,14 @@ from utils import folder_setup, save_cfg, Logging, save_json, invnorm, invnorm25
 
 def train_func(args):
 
+    # seed setup
+    random.seed(args.seed)
+    np.random.seed(args.seed)
+    torch.manual_seed(args.seed)
+    torch.cuda.manual_seed(args.seed)
+    torch.cuda.manual_seed_all(args.seed)
+    torch.backends.cudnn.deterministic = True
+
     # device setup
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu", index = args.idx)
 
@@ -30,16 +37,7 @@ def train_func(args):
 
     # dataset setup
     data, args = get_ds(args)
-    train_ds, valid_ds, test_ds, train_dl, valid_dl, test_dl = data
-
-    if args.verbose:
-        print(f"Number Training Samples: {len(train_ds)}")
-        print(f"Number Validating Samples: {len(valid_ds)}")
-        print(f"Number Testing Samples: {len(test_ds)}")
-
-        print(f"Number Training Batchs: {len(train_dl)}")
-        print(f"Number Validating Batchs: {len(valid_dl)}")
-        print(f"Number Testing Batchs: {len(test_dl)}")
+    _, _, _, train_dl, valid_dl, _ = data
 
     # logging setup
     log_interface = Logging(args)
@@ -59,18 +57,15 @@ def train_func(args):
         log_interface.watch(model)
 
     # training
-    if args.verbose:
-        print("Training")
     old_valid_loss = 1e26
-    epoch_prog = range(args.epochs) if args.verbose else tqdm(range(args.epochs))
     
-    for epoch in epoch_prog:
+    for epoch in track(range(args.epochs)):
         args.epoch = epoch
         if args.verbose:
             print(f"Epoch: {epoch}")
         model.train()
-        train_prog = tqdm(enumerate(train_dl)) if args.verbose else enumerate(train_dl)
-        for batch, (img, target) in train_prog:
+
+        for _, (img, target) in enumerate(train_dl):
             img = img.to(device)
             for task in target:
                 target[task] = target[task].to(device)
@@ -102,11 +97,10 @@ def train_func(args):
 
             scheduler.step()
         
-        valid_prog = tqdm(enumerate(valid_dl)) if args.verbose else enumerate(valid_dl)
         model.eval()
         with torch.no_grad():
             losses = []
-            for batch, (img, target) in valid_prog:
+            for _, (img, target) in enumerate(valid_dl):
                 img = img.to(device)
                 for task in target:
                     target[task] = target[task].to(device)
@@ -154,90 +148,7 @@ def train_func(args):
         torch.save(save_dict, save_path)
     
     # save gradient solution
-    if args.log:
-        log_interface.save_grad()
+    log_interface.save_grad()
 
-    # evaluation
-    log_interface.reset()
-    if args.verbose:
-        print("Validating")
-    test_prog = tqdm(enumerate(test_dl)) if args.verbose else enumerate(test_dl)
-    model.eval()
-    with torch.no_grad():
-        for batch, (img, target) in test_prog:
-            img = img.to(device)
-            for task in target:
-                target[task] = target[task].to(device)
-            
-            pred_target = model(img)
-
-            for task in pred_target:
-                for loss_name in loss_dict:
-                    if task in loss_name:
-                        task_loss = loss_dict[loss_name](pred_target[task], target[task])
-
-                        log_key = f"test/{loss_name}_loss"
-                        log_interface(key=log_key, value=task_loss.item(), mode='test', batch=loss_batch[loss_name])
-
-                for metric in metric_dict:    
-                    if task in metric:
-                        value = metric_dict[metric](pred_target[task], target[task])
-
-                        log_key = f"test/{metric}"
-                        log_interface(key=log_key, value=value, mode='test', batch=metric_batch[metric])
-    
-    test_log_avg = log_interface.get_avg(mode='test')
-    test_log_avg_path = args.exp_dir + "/test_log_avg.json"
-    save_json(test_log_avg, test_log_avg_path)
-
-    # finalization
-    for idx in range(10):
-        img, target = test_ds[idx]
-        img = img.unsqueeze(0).to(device)
-        
-        pred = model(img)
-        
-        for task in target:
-            if task == "semantic":
-                perform_dir = args.exp_dir + f"/{task}"
-                if not os.path.exists(perform_dir):
-                    os.mkdir(perform_dir)
-                pred_task_np = torch.argmax(pred[task][0], dim=0).cpu().unsqueeze(0).permute(1, -1, 0).numpy()
-                lble_task_np = torch.argmax(target[task], dim=0).cpu().unsqueeze(0).permute(1, -1, 0).numpy()
-
-                pred_path = perform_dir + f"/pred_{idx}.pdf"
-                lble_path = perform_dir + f"/lble_{idx}.pdf"                
-
-                for _img, _path in zip([pred_task_np, lble_task_np], [pred_path, lble_path]):
-                    plt.figure()
-
-                    plt.imshow(_img)
-                    plt.axis('off')
-                    plt.savefig(_path, format='pdf', dpi=300)
-
-                    plt.close()
-
-            elif task in ['depth', 'reconstruction', 'normal']:
-                perform_dir = args.exp_dir + f"/{task}"
-                pass
-            
-                # TODO: implement save performance for depth
-
-        img_dir = args.exp_dir + f"/img"
-        if not os.path.exists(img_dir):
-            os.mkdir(img_dir)
-        
-        if args.ds == 'oxford':
-            img_np = invnorm(img[0]).cpu().permute(1, -1, 0).numpy()
-            
-        path = img_dir + f"/{idx}.pdf"
-        plt.figure()
-
-        plt.imshow(img_np)
-        plt.axis('off')
-        plt.savefig(path, format='pdf', dpi=300, pad_inches=0)
-
-        plt.close()
-    
-    if args.verbose:
-        print("Ending")
+    # save model
+    log_interface.log_model()

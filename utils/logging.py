@@ -114,6 +114,9 @@ class Logging:
 
         pickle.dump(self.__grad_sol, dbfile)                    
         dbfile.close()
+
+        if self.__args.wandb:
+            self.__run.save(self.__grad_sol_dir + "/*")
     
     @property
     def log(self):
@@ -145,3 +148,11 @@ class Logging:
                     raise ValueError(f'key: {log_key} wrong format')
         
         return log_avg
+
+    def log_model(self):
+        best_path = self.__args.exp_dir + f"/best.pt"
+        if os.path.exists(best_path):
+            self.__run.log_model(path=best_path, model_name=f"{self.__args.run_name}-best-model")
+        last_path = self.__args.exp_dir + f"/last.pt"
+        if os.path.exists(last_path):
+            self.__run.log_model(path=last_path, model_name=f"{self.__args.run_name}-last-model")
